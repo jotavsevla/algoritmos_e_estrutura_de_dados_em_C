@@ -2,7 +2,7 @@
 #define __LISTA_H__
 /*
  * Implemente as seguintes funcoes utilizando uma lista circular
- * duplamente ligada com no cabeca.
+ * duplamente ligada com no cabeca.*
  */
 
 typedef struct {

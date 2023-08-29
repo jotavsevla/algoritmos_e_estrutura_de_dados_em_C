@@ -149,7 +149,7 @@ void desaloca_lista(Lista *ap_lista){
     while (percorre != (*ap_lista)){
         No* remove = percorre;
         percorre = percorre->prox;
-        free (percorre);
+        free (remove);
     }
     return;
 }

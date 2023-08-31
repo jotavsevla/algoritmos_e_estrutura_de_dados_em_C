@@ -1,10 +1,11 @@
-#include "lab.03.c"
+#include "lab03.c"
 #include <stdlib.h>
 
 /* Inicializa um polinômio vazio. */
 void inicializa_polinomio ( Polinomio * ap_pol){
 
     *ap_pol = ( No*) calloc ( 1,sizeof ( No));
+    (*ap_pol)->valor.coef = (*ap_pol)->valor.grau = 0;
     ( *ap_pol)->prox = ( *ap_pol)->antec = ( *ap_pol);
 
 }
@@ -97,7 +98,7 @@ void soma ( Polinomio res, Polinomio a, Polinomio b){
 
         if ( peratualB->valor.grau == peratualA->valor.grau){
 
-            define_coeficiente ( res, peratualA->valor.grau, peratualA->valor.coef - peratualB->valor.coef);
+            define_coeficiente ( res, peratualA->valor.grau, peratualA->valor.coef + peratualB->valor.coef);
 
             peratualA = peratualA->prox;
             peratualB = peratualB->prox;
@@ -130,13 +131,13 @@ void soma ( Polinomio res, Polinomio a, Polinomio b){
  
 
         while ( peratualA != a){
-            
+
             define_coeficiente ( res, peratualA->valor.grau, peratualA->valor.coef);
 
             peratualA = peratualA->prox;
 
         }
-
+    imprime (res);
     return;
 }
 
@@ -185,7 +186,7 @@ void subtrai ( Polinomio res, Polinomio a, Polinomio b){
             peratualB = peratualB->prox;
 
         }
-        imprime (res);
+        
     }
 
         while ( peratualB != b){
@@ -205,7 +206,7 @@ void subtrai ( Polinomio res, Polinomio a, Polinomio b){
             peratualA = peratualA->prox;
 
         }
-
+    imprime(res);
     return;
 }
 
@@ -219,9 +220,12 @@ void subtrai ( Polinomio res, Polinomio a, Polinomio b){
  * grau 10 com valor 5. 
  */
 void imprime (Polinomio pol){
-
-    No* percorre = pol->prox;
     printf("[");
+    if (pol->prox == pol){
+        printf("]\n");
+        return;
+    }
+    No* percorre = pol->prox;
     while(percorre->prox != pol){
         printf ("(%d,%d),", percorre->valor.grau, percorre->valor.coef);
         percorre = percorre->prox;

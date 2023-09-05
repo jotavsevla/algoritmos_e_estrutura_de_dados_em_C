@@ -3,8 +3,8 @@
 
 /* Inicializa um polinômio vazio. */
 void inicializa_polinomio ( Polinomio * ap_pol){
-
     *ap_pol = ( No*) calloc ( 1,sizeof ( No));
+
     (*ap_pol)->valor.coef = (*ap_pol)->valor.grau = 0;
     ( *ap_pol)->prox = ( *ap_pol)->antec = ( *ap_pol);
 
@@ -59,11 +59,10 @@ void define_coeficiente ( Polinomio pol, int grau, int coef){
 
 /* Zera o polinomio, tornando-o um polinomio inicializado, mas igual a zero. Desaloca a memória liberada. */
 void zera ( Polinomio pol){
-    
-    pol->antec->prox = NULL;
+    if(pol->prox == pol) return;
     No* apagando = pol->prox;
 
-    while ( apagando->prox != NULL || apagando != NULL){   
+    while (apagando != pol){   
         No* apagar = apagando;
         apagando = apagando->prox;
         free (apagar);
@@ -80,7 +79,7 @@ void zera ( Polinomio pol){
  * Libera a memória anteriormente utilizada pelos nos descartados de res, e sobreescreve res. */
 void soma ( Polinomio res, Polinomio a, Polinomio b){
     
-    inicializa_polinomio ( &res);
+    zera(res);
 
     if (a->prox == a){
         res = b;
@@ -137,7 +136,6 @@ void soma ( Polinomio res, Polinomio a, Polinomio b){
             peratualA = peratualA->prox;
 
         }
-    imprime (res);
     return;
 }
 
@@ -145,7 +143,7 @@ void soma ( Polinomio res, Polinomio a, Polinomio b){
  * Libera a memória anteriormente utilizada pelos nos descartados de res, e sobreescreve res. */
 void subtrai ( Polinomio res, Polinomio a, Polinomio b){
     
-    inicializa_polinomio ( &res);
+    zera (res);
 
     if (a->prox == a){
         res = b;
@@ -206,7 +204,6 @@ void subtrai ( Polinomio res, Polinomio a, Polinomio b){
             peratualA = peratualA->prox;
 
         }
-    imprime(res);
     return;
 }
 
@@ -238,14 +235,13 @@ void imprime (Polinomio pol){
 /* Desaloca toda a memória alocada da lista.
  */
 void desaloca_polinomio (Polinomio *ap_pol){
-        
+    if ((*ap_pol)->prox== (*ap_pol)) 
+        return;
     No* apagando = (*ap_pol)->prox;
-    (*ap_pol)->antec->prox = NULL;
-    while (apagando->prox != NULL || apagando != NULL){   
+    while (apagando != (*ap_pol)){   
         No* apagar = apagando;
         apagando = apagando->prox;
         free (apagar);
-    }   
-    free (ap_pol); 
+    }    
     return;
 }

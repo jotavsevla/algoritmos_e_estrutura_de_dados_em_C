@@ -12,10 +12,10 @@ typedef struct {
   int coef;
 }TipoDado;
 
-typedef struct No_aux {
+typedef struct {
   TipoDado valor;
-  struct No_aux * antec;  
-  struct No_aux * prox;
+  struct No * antec;
+  struct No * prox;
 } No, *Lista;
 typedef Lista Polinomio;
 

@@ -46,77 +46,86 @@ A saída para a entrada do exemplo acima seria:
 3
 3  0 2 4
 3  3 5 7
-2  1 6*/
+2  1 6   */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-enum veracidade {
+typedef enum  {
     coberto = 1,
     conflito = -1,
-    not_coberto= -2,
+    not_coberto = -2,
     sem_solucao = 0
-};
+}veracidade;
+
+void imprime_insoluvel();
+void quais_cobriram (int* bitmask, int W_bitmask, int tam_W, int limit_index_elements);
+veracidade combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int n);
 bool conflito_bit_x(int valor1, int valor2, int j);
-bool cobre_ou_nao(int W_bitmask);
-int shift ( int bitmask, int shift);
-int main (void){
-    int m = 16; int n =16;
-    while (n >= 15 && m >=15){
-        scanf("%i", &n);
-        printf("\n");
-        scanf("%i", &m);
+int coloca_um (int bitmask, int shift);
+
+
+void imprimebit(int bitmask){
+    for (int i = 0; i < (sizeof(int) * 8); ++i){ // Itera entre todas as posições (bits) do int
+        if (i > 7 && i % 8 == 0) printf(" ");   // Apenas para espaçar a cada 8 bits
+        if((bitmask&(1<<i)) != 0) printf("1"); // Confere se há um bit 1 na posição i, se houver, imprime 1
+        else printf("0");                     // Se não houver, imprime 0
     }
-    // este trecho do código fica responsável
-    // por definir quaantos elementos terao em cada um dos subconjuntos
-    // e, antes disso, quantos subconjuntos devem representar o conjunto S
-    int qnt_elements = 0, valor = 0;
-    int* bitmask = calloc (m, sizeof (int));
-    for (int i = 0; i < m; i++){
-        scanf("%i", &qnt_elements);
-        for(int j = 0; j < qnt_elements; j++){
-            scanf("%i", &valor);
-            bitmask[i] = shift(bitmask[i], valor);
-        }
-    }
-    combine (bitmask, n,  m, profundidade, pega, n);
-    combine (bitmask, n,  m, profundidade, !pega, n);
+    printf("\n");
 }
-int shift ( int bitmask, int shift){
+
+
+void imprime_insoluvel(){
+    printf("Insoluvel\n");
+}
+
+
+int coloca_um ( int bitmask, int shift){
     bitmask = bitmask|(1<<shift);
     return bitmask;
 }
+
+
 bool conflito_bit_x(int valor1, int valor2, int j){
+    imprimebit(valor1);
+    imprimebit(valor2);
     if((valor1&(1<<j)) != 0 && (valor2&(1<<j)) != 0)
         return true; //com conflito
-    return false;     //sem conflito
+    return false;    //sem conflito
 }
 
 /* está função é responsável por retornar um parâmetro que define, se ja existe conflito naquela
  montagem atual, se ainda nao existe conflito e ja tem resposta definida */
 
-int cobre(int W_bitmask, int* bitmask, int tam_W, int n){
+veracidade cobre(int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto){
     int acumulador = 0;
     //percorre cada um dos index
     for (int i = 0; i < tam_W; ++i){
-        //verificar se este index(i) está incluso
+        // verificar se este index(i) está incluso
         if((W_bitmask&(1<<i)) != 0){
-            for(int j = 0; j < n; ++j){
-                if(conflito_bit_x(acumulador, bitmask[i], j))
+            printf("index %i está incluso\n", i); // TODO: REMOVER
+            for(int j = 0; j < tam_subconjunto; ++j){
+                if(conflito_bit_x(acumulador, subconjunto[i], j)) {
+                    printf("conflito no bit %i\n", j); // TODO: REMOVER
                     return conflito;
-                acumulador = bitmask[i] | (1<<i);
+                }
+                acumulador = subconjunto[i] | (1<<i);
 
             }
         }
     }
-    for (int i = 0; i < n; ++i){
+    for (int i = 0; i < tam_subconjunto; ++i){
         if ((acumulador&(1<<i)) == 0)
             return not_coberto;
     }
     return coberto;
 }
-int  combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int n){
-    switch (cobre(W_bitmask, bitmask, tam_W, n)) {
+
+
+int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int tam_n){
+    switch (cobre(W_bitmask, bitmask, tam_W, tam_n)) {
+        default:
+            break;
         case coberto:
             return W_bitmask;
             break;
@@ -125,13 +134,35 @@ int  combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool peg
             break;
     }
     if( tam_W < profundidade)
-        return 0;
+        return sem_solucao;
     if (pega)
-        W_bitmask = shift(W_bitmask, profundidade);
-    int res1 = combine (bitmask, tam_W,  W_bitmask, ++profundidade, pega, n);
-    int res2 = combine(bitmask, tam_W, W_bitmask,++profundidade , !pega, n);
+        W_bitmask = coloca_um(W_bitmask, profundidade);
+    int res1 = combine (bitmask, tam_W,  W_bitmask, ++profundidade, pega, tam_n);
+    int res2 = combine (bitmask, tam_W, W_bitmask,++profundidade , !pega, tam_n);
 
     if (res1 != 0)
         return res1;
     return res2;
+}
+// esta função conta os elementos onde existe um subconjunto
+void quais_cobriram (int* sub_conjuntos, int W_bitmask, int tam_W, int limit_index_elements){
+    int contador_elementos = 0;
+    for(int i = 0; i < tam_W; ++i){
+        contador_elementos = 0;
+        // no caso em que esteja, percorre ele 1 vez para saber quantos
+        // elementos ele possui e imprime na tela, depois, percorre novamente
+        // imprimindo as posiçoes respectivas onde ha um bit no vetor binário
+        if((W_bitmask&(1<<i)) != 0){
+            for(int j = 0; j < limit_index_elements; ++j){
+                if((sub_conjuntos[i]&1<<j)!=0)
+                    contador_elementos++;
+            }
+            printf("%i ", contador_elementos);
+            for(int j = 0; j < limit_index_elements; ++j){
+                if((sub_conjuntos[i]&1<<j)!= 0)
+                    printf("%i ", j);
+            }
+            printf("\n");
+        }
+    }
 }

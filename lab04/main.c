@@ -1,11 +1,10 @@
 #include "subconjunto.c"
 
 int main (void){
-    int m = 16; int n = 16;
-    while (n >= 15 && m >=15){
-        scanf("%d", &n);
-        scanf("%d", &m);
-    }
+    int m, n;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
     // este trecho do código fica responsável
     // por definir quaantos elementos terao em cada um dos subconjuntos
     // e, antes disso, quantos subconjuntos devem representar o conjunto S
@@ -28,8 +27,8 @@ int main (void){
     int profundidade = 0;
     int op1, op2;
 
-    op1 = combine (subconjuntos, n,  m, profundidade, pega, n);
-    op2 = combine (subconjuntos, n,  m, profundidade, !pega, n);
+    op1 = combine (subconjuntos, m,  1, profundidade, pega, n);
+    op2 = combine (subconjuntos, m,  0, profundidade, !pega, n);
 
     if (op1 == sem_solucao && op2 == sem_solucao)
         imprime_insoluvel();

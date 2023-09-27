@@ -23,7 +23,7 @@ int main(void){
 }
 int shift(int bitmask, int shift){
     // Definindo uma posicao numa mascara de bits
-    bitmask = bitmask|(1<<shift);
+    bitmask |= (1<<shift);
     return bitmask;
 }
 

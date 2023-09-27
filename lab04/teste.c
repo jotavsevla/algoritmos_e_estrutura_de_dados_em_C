@@ -26,7 +26,7 @@ int main(){
     // pos 3 a 5 = (int)56 -> 000111
     subconjunto[3] = 11;
     subconjunto[4] = 0;
-    subconjunto[5] = 4;
+    subconjunto[5] = 2;
     // pos 6 a 8 = (int)448 -> 000000111
     subconjunto[6] = 11;
     subconjunto[7] = 0;

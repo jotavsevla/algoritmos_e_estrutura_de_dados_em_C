@@ -103,15 +103,14 @@ veracidade cobre(int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto
     for (int i = 0; i < tam_W; ++i){
         // verificar se este index(i) está incluso
         if((W_bitmask&(1<<i)) != 0){
-            printf("index %i está incluso\n", i); // TODO: REMOVER
+            //printf("index %i está incluso\n", i); // TODO: REMOVER
             for(int j = 0; j < tam_subconjunto; ++j){
                 if(conflito_bit_x(acumulador, subconjunto[i], j)) {
-                    printf("conflito no bit %i\n", j); // TODO: REMOVER
+                    //printf("conflito no bit %i\n", j); // TODO: REMOVER
                     return conflito;
                 }
-                acumulador = subconjunto[i] | (1<<i);
-
             }
+            acumulador |= subconjunto[i];
         }
     }
     for (int i = 0; i < tam_subconjunto; ++i){
@@ -140,7 +139,7 @@ int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega
     int res1 = combine (bitmask, tam_W,  W_bitmask, ++profundidade, pega, tam_n);
     int res2 = combine (bitmask, tam_W, W_bitmask,++profundidade , !pega, tam_n);
 
-    if (res1 != 0)
+    if (res1 != sem_solucao)
         return res1;
     return res2;
 }

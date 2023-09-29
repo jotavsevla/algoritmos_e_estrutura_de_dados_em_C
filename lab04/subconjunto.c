@@ -99,16 +99,13 @@ bool conflito_bit_x(int valor1, int valor2, int j){
 
 veracidade cobre(int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto){
     int acumulador = 0;
-    //percorre cada um dos index
+    //percorre cada um dos subconjuntos e verifica que estão inclusos na atual instancia
     for (int i = 0; i < tam_W; ++i){
         // verificar se este index(i) está incluso
         if((W_bitmask&(1<<i)) != 0){
-            //printf("index %i está incluso\n", i); // TODO: REMOVER
             for(int j = 0; j < tam_subconjunto; ++j){
-                if(conflito_bit_x(acumulador, subconjunto[i], j)) {
-                    //printf("conflito no bit %i\n", j); // TODO: REMOVER
+                if(conflito_bit_x(acumulador, subconjunto[i], j))
                     return conflito;
-                }
             }
             acumulador |= subconjunto[i];
         }
@@ -122,22 +119,25 @@ veracidade cobre(int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto
 
 
 int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int tam_n){
+    if (pega) {
+        W_bitmask = coloca_um(W_bitmask, profundidade);
+    }
+    if( tam_W < profundidade) {
+        return sem_solucao;
+    }
     switch (cobre(W_bitmask, bitmask, tam_W, tam_n)) {
-        default:
-            break;
         case coberto:
             return W_bitmask;
             break;
         case conflito:
             return sem_solucao;
             break;
+        default:
+            break;
     }
-    if( tam_W < profundidade)
-        return sem_solucao;
-    if (pega)
-        W_bitmask = coloca_um(W_bitmask, profundidade);
-    int res1 = combine (bitmask, tam_W,  W_bitmask, ++profundidade, pega, tam_n);
-    int res2 = combine (bitmask, tam_W, W_bitmask,++profundidade , !pega, tam_n);
+
+    int res1 = combine (bitmask, tam_W,  W_bitmask, profundidade+1, pega, tam_n);
+    int res2 = combine (bitmask, tam_W, W_bitmask, profundidade+1, !pega, tam_n);
 
     if (res1 != sem_solucao)
         return res1;
@@ -146,6 +146,12 @@ int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega
 // esta função conta os elementos onde existe um subconjunto
 void quais_cobriram (int* sub_conjuntos, int W_bitmask, int tam_W, int limit_index_elements){
     int contador_elementos = 0;
+    int contador_W = 0;
+
+    for (int i = 0; i < tam_W; ++i) if ((W_bitmask&(1<<i)) != 0) ++contador_W;
+
+    printf("%d\n", contador_W);
+
     for(int i = 0; i < tam_W; ++i){
         contador_elementos = 0;
         // no caso em que esteja, percorre ele 1 vez para saber quantos
@@ -156,10 +162,10 @@ void quais_cobriram (int* sub_conjuntos, int W_bitmask, int tam_W, int limit_ind
                 if((sub_conjuntos[i]&1<<j)!=0)
                     contador_elementos++;
             }
-            printf("%i ", contador_elementos);
+            printf("%d ", contador_elementos);
             for(int j = 0; j < limit_index_elements; ++j){
                 if((sub_conjuntos[i]&1<<j)!= 0)
-                    printf("%i ", j);
+                    printf("%d ", j);
             }
             printf("\n");
         }

@@ -30,8 +30,10 @@ int main (void){
     op1 = combine (subconjuntos, m,  1, profundidade, pega, n);
     op2 = combine (subconjuntos, m,  0, profundidade, !pega, n);
 
-    if (op1 == sem_solucao && op2 == sem_solucao)
+    if (op1 == sem_solucao && op2 == sem_solucao){
         imprime_insoluvel();
+        return 0;
+    }
     op1 != sem_solucao ? quais_cobriram(subconjuntos, op1, m, n) : quais_cobriram(subconjuntos, op2, m, n);
 
     return 0;

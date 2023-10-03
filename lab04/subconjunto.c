@@ -64,6 +64,44 @@ veracidade combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bo
 bool conflito_bit_x(int valor1, int valor2, int j);
 int coloca_um (int bitmask, int shift);
 
+int main (void){
+    int m, n;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    // este trecho do código fica responsável
+    // por definir quaantos elementos terao em cada um dos subconjuntos
+    // e, antes disso, quantos subconjuntos devem representar o conjunto S
+    printf("\n");
+
+    int qnt_elements = 0, valor = 0;
+    int* subconjuntos = calloc (m, sizeof (int));
+
+    for (int i = 0; i < m; i++){
+        scanf("%d", &qnt_elements);
+
+        for(int j = 0; j < qnt_elements; j++){
+            scanf("%d", &valor);
+            subconjuntos[i] = coloca_um (subconjuntos[i], valor);
+        }
+
+    }
+
+    bool pega = true;
+    int profundidade = 0;
+    int op1, op2;
+
+    op1 = combine (subconjuntos, m,  1, profundidade, pega, n);
+    op2 = combine (subconjuntos, m,  0, profundidade, !pega, n);
+
+    if (op1 == sem_solucao && op2 == sem_solucao){
+        imprime_insoluvel();
+        return 0;
+    }
+    op1 != sem_solucao ? quais_cobriram(subconjuntos, op1, m, n) : quais_cobriram(subconjuntos, op2, m, n);
+
+    return 0;
+}
 
 void imprimebit(int bitmask){
     for (int i = 0; i < (sizeof(int) * 8); ++i){ // Itera entre todas as posições (bits) do int
@@ -87,8 +125,6 @@ int coloca_um ( int bitmask, int shift){
 
 
 bool conflito_bit_x(int valor1, int valor2, int j){
-    imprimebit(valor1);
-    imprimebit(valor2);
     if((valor1&(1<<j)) != 0 && (valor2&(1<<j)) != 0)
         return true; //com conflito
     return false;    //sem conflito
@@ -119,12 +155,11 @@ veracidade cobre(int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto
 
 
 int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int tam_n){
-    if (pega) {
+    if (pega)
         W_bitmask = coloca_um(W_bitmask, profundidade);
-    }
-    if( tam_W < profundidade) {
+    if( tam_W < profundidade)
         return sem_solucao;
-    }
+
     switch (cobre(W_bitmask, bitmask, tam_W, tam_n)) {
         case coberto:
             return W_bitmask;
@@ -148,7 +183,9 @@ void quais_cobriram (int* sub_conjuntos, int W_bitmask, int tam_W, int limit_ind
     int contador_elementos = 0;
     int contador_W = 0;
 
-    for (int i = 0; i < tam_W; ++i) if ((W_bitmask&(1<<i)) != 0) ++contador_W;
+    for (int i = 0; i < tam_W; ++i)
+        if ((W_bitmask&(1<<i)) != 0)
+            ++contador_W;
 
     printf("%d\n", contador_W);
 

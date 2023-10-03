@@ -13,7 +13,7 @@ void print_result(veracidade resultado){
          printf("coberto\n");
      printf("----------------\n");
 }
-
+// necessário comentar/desativar a main do arquivo subconjunto.c para utilização deste caso de testes
 int main(){
     // int W_bitmask, int* subconjunto, int tam_W, int tam_subconjunto
     int tam_W, tam_subconjunto = 9;

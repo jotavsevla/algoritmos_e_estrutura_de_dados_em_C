@@ -50,6 +50,9 @@ A saída para a entrada do exemplo acima seria:
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <pthread.h>
+#include <time.h>
+
 
 typedef enum  {
     coberto = 1,
@@ -57,15 +60,27 @@ typedef enum  {
     not_coberto = -2,
     sem_solucao = 0
 }veracidade;
+typedef struct thread_parameters{
+    int* bitmask, tam_W, W_bitmask, profundidade, tam_n;
+    bool pega;
+    veracidade resultado;
+}Parametros;
+
+void* combine_thread (void* imensidao_da_memoria);
 
 void imprime_insoluvel();
+
 void quais_cobriram (int* bitmask, int W_bitmask, int tam_W, int limit_index_elements);
+
 veracidade combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega, int n);
+
 bool conflito_bit_x(int valor1, int valor2, int j);
+
 int coloca_um (int bitmask, int shift);
 
 int main (void){
     int m, n;
+
     scanf("%d", &n);
     scanf("%d", &m);
 
@@ -87,18 +102,46 @@ int main (void){
 
     }
 
-    bool pega = true;
-    int profundidade = 0;
-    int op1, op2;
+//    bool pega = true;
+//    int profundidade = 0;
+//    int op1, op2;
 
-    op1 = combine (subconjuntos, m,  1, profundidade, pega, n);
-    op2 = combine (subconjuntos, m,  0, profundidade, !pega, n);
+    pthread_t thread1, thread2;
 
-    if (op1 == sem_solucao && op2 == sem_solucao){
+    Parametros parametros1;
+    parametros1.bitmask = subconjuntos;
+    parametros1.tam_W = m;
+    parametros1.W_bitmask = 1;
+    parametros1.profundidade = 0;
+    parametros1.pega = true;
+    parametros1.tam_n = n;
+
+    Parametros parametros2;
+    parametros2.bitmask = subconjuntos;
+    parametros2.tam_W = m;
+    parametros2.W_bitmask = 0;
+    parametros2.profundidade = 0;
+    parametros2.pega = false;
+    parametros2.tam_n = n;
+    
+    clock_t time = clock();
+    pthread_create (&thread1, NULL, combine_thread, &parametros1);
+    pthread_create (&thread2, NULL, combine_thread, &parametros2);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    time = clock() - time;
+
+    printf("%d\n", (int)time);
+  //  op1 = combine_thread(&parametros1);
+  //  op2 = combine_thread(&parametros2);
+//    op1 = combine (subconjuntos, m,  1, profundidade, pega, n);
+//    op2 = combine (subconjuntos, m,  0, profundidade, !pega, n);
+
+    if (parametros1.resultado == sem_solucao && parametros2.resultado == sem_solucao){
         imprime_insoluvel();
         return 0;
     }
-    op1 != sem_solucao ? quais_cobriram(subconjuntos, op1, m, n) : quais_cobriram(subconjuntos, op2, m, n);
+    parametros1.resultado != sem_solucao ? quais_cobriram(subconjuntos, parametros1.resultado, m, n) : quais_cobriram(subconjuntos, parametros2.resultado, m, n);
 
     return 0;
 }
@@ -113,6 +156,14 @@ void imprimebit(int bitmask){
 }
 
 
+void* combine_thread (void* imensidao_da_memoria){
+    Parametros* arg = (Parametros*) imensidao_da_memoria;
+    arg->resultado = combine(arg->bitmask, arg->tam_W, arg->W_bitmask, arg->profundidade, arg->pega, arg->tam_n);
+     return NULL;
+}
+
+
+
 void imprime_insoluvel(){
     printf("Insoluvel\n");
 }
@@ -124,8 +175,8 @@ int coloca_um ( int bitmask, int shift){
 }
 
 
-bool conflito_bit_x(int valor1, int valor2, int j){
-    if((valor1&(1<<j)) != 0 && (valor2&(1<<j)) != 0)
+bool conflito_bit_x(int mascara1, int mascara2, int j){
+    if((mascara1&(1<<j)) != 0 && (mascara2&(1<<j)) != 0)
         return true; //com conflito
     return false;    //sem conflito
 }
@@ -163,10 +214,8 @@ int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega
     switch (cobre(W_bitmask, bitmask, tam_W, tam_n)) {
         case coberto:
             return W_bitmask;
-            break;
         case conflito:
             return sem_solucao;
-            break;
         default:
             break;
     }
@@ -180,7 +229,7 @@ int combine (int* bitmask, int tam_W, int W_bitmask, int profundidade, bool pega
 }
 // esta função conta os elementos onde existe um subconjunto
 void quais_cobriram (int* sub_conjuntos, int W_bitmask, int tam_W, int limit_index_elements){
-    int contador_elementos = 0;
+    int contador_elementos;
     int contador_W = 0;
 
     for (int i = 0; i < tam_W; ++i)

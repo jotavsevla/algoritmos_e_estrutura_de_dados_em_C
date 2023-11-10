@@ -45,24 +45,37 @@ int entrada_capacidade_maxima ();
 
 Objeto* entrada_conjunto_S (int quantidade_objetos);
 
-Mochila mochila_mais_valiosa (Mochila em_pauta, int n, Objeto* conjunto_S, bool pega);
+Mochila mochila_mais_valiosa_aux (Mochila em_pauta, int n, Objeto* conjunto_S, bool pega);
 
-void saida_mochila_preferida (Objeto* conjunto_S , int mascara_obj, int n);
+Mochila mochila_mais_valiosa (Objeto* conjunto_S, int n, int capacidade_mochila);
+
+void saida_mochila_preferida (Objeto* conjunto_S , Mochila preferida, int n, int capacidade_maxima);
 
 int main() {
     int qnt_objetos = entrada_quantidade_objetos ();
     int capacidade_mochila = entrada_capacidade_maxima();
     Objeto* conjunto_S = entrada_conjunto_S (qnt_objetos);
-    Mochila preferida;
-    preferida.mascara_obj = 0;
-    preferida = mochila_mais_valiosa(preferida, qnt_objetos, conjunto_S, true);
-    saida_mochila_preferida(conjunto_S, preferida.mascara_obj, qnt_objetos);
-    //chamadas das funções que acham a solução lexicograficamente menor
-
+    Mochila preferida = mochila_mais_valiosa(conjunto_S, qnt_objetos, capacidade_mochila);
+    saida_mochila_preferida(conjunto_S, preferida, qnt_objetos, capacidade_mochila);
     return 0;
 }
 
-Mochila mochila_mais_valiosa (Mochila em_pauta, int n, Objeto* conjunto_S, bool pega){
+Mochila mochila_mais_valiosa (Objeto* conjunto_S, int n, int capacidade_mochila){
+    Mochila candidata_1, candidata_2;
+    candidata_1.mascara_obj = 0;
+    candidata_2.mascara_obj = 0;
+    candidata_1.soma_objetos.valor = 0;
+    candidata_2.soma_objetos.valor = 0;
+    candidata_1.soma_objetos.peso = capacidade_mochila;
+    candidata_2.soma_objetos.peso = capacidade_mochila;
+    candidata_1 = mochila_mais_valiosa_aux(candidata_1, n, conjunto_S, true);
+    candidata_2 = mochila_mais_valiosa_aux(candidata_2, n, conjunto_S, false);
+
+    return candidata_1.soma_objetos.valor > candidata_2.soma_objetos.valor ? candidata_1 : candidata_2;
+
+}
+
+Mochila mochila_mais_valiosa_aux (Mochila em_pauta, int n, Objeto* conjunto_S, bool pega){
     // caso base
     if (n == 0 || em_pauta.soma_objetos.peso == 0)
         return em_pauta;
@@ -75,10 +88,10 @@ Mochila mochila_mais_valiosa (Mochila em_pauta, int n, Objeto* conjunto_S, bool 
         }
         em_pauta.soma_objetos.peso -= conjunto_S[n-1].peso;
         em_pauta.soma_objetos.valor += conjunto_S[n-1].valor;
-        em_pauta.mascara_obj = em_pauta.mascara_obj &(1<<(n-1));
+        em_pauta.mascara_obj |=(1<<(n-1));
     }
-    Mochila resultado1 = mochila_mais_valiosa(em_pauta, n-1, conjunto_S, true);
-    Mochila resultado2 = mochila_mais_valiosa(em_pauta, n-1, conjunto_S, false);
+    Mochila resultado1 = mochila_mais_valiosa_aux(em_pauta, n - 1, conjunto_S, true);
+    Mochila resultado2 = mochila_mais_valiosa_aux(em_pauta, n - 1, conjunto_S, false);
     return (resultado1.soma_objetos.valor > resultado2.soma_objetos.valor) ? resultado1 : resultado2;
 }
 // retorna o vetor do conjunto_S (objetos) definida por n
@@ -86,7 +99,6 @@ Objeto* entrada_conjunto_S (int n_quantidade_objetos){
     Objeto* conjunto_S = (Objeto*) calloc (sizeof (Objeto), n_quantidade_objetos);
     for (int i = 0; i < n_quantidade_objetos; ++i){
         scanf ("%d%d", &conjunto_S[i].peso, &conjunto_S[i].valor);
-        printf("\n");
     }
     return conjunto_S;
 }
@@ -102,9 +114,17 @@ int entrada_capacidade_maxima (){
     scanf("%d", &mxN);
     return mxN;
 }
-void saida_mochila_preferida (Objeto* conjunto_S , int mascara_obj, int n){
+void saida_mochila_preferida (Objeto* conjunto_S , Mochila preferida, int n, int capacidade_maxima){
+    printf("%d %d\n", capacidade_maxima-preferida.soma_objetos.peso, preferida.soma_objetos.valor);
+
+    int qnt_obj = 0;
+    for (int i = 0; i < n; ++i)
+        if ((preferida.mascara_obj&(1<<i)) != 0) ++qnt_obj;
+    printf("%d", qnt_obj);
+
     for (int i = 0; i < n; ++i){
-        if ((mascara_obj&(1<<n)) != 0)
-            printf("%d %d\n", conjunto_S[i].peso, conjunto_S[i].valor);
+        if ((preferida.mascara_obj&(1<<i)) != 0)
+            printf(" %d", i);
     }
+    printf("\n");
 }

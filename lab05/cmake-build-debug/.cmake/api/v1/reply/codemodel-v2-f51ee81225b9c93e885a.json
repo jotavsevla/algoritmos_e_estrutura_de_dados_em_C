@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.26"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "mochila_lab5_knapsack01",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "mochila_lab5_knapsack01::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-mochila_lab5_knapsack01-Debug-952b10d5d226777aa0ef.json",
+					"name" : "mochila_lab5_knapsack01",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/jotavsevla/Documents/GitHub/algoritmos_e_estrutura_de_dados_em_C/lab05/cmake-build-debug",
+		"source" : "/Users/jotavsevla/Documents/GitHub/algoritmos_e_estrutura_de_dados_em_C/lab05"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

@@ -1,0 +1,3 @@
+/Users/jotavsevla/Documents/GitHub/algoritmos_e_estrutura_de_dados_em_C/lab05/cmake-build-debug/CMakeFiles/mochila_lab5_knapsack01.dir
+/Users/jotavsevla/Documents/GitHub/algoritmos_e_estrutura_de_dados_em_C/lab05/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/jotavsevla/Documents/GitHub/algoritmos_e_estrutura_de_dados_em_C/lab05/cmake-build-debug/CMakeFiles/rebuild_cache.dir

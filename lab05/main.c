@@ -88,7 +88,7 @@ Mochila mochila_mais_valiosa_aux (Mochila em_pauta, int n, Objeto* conjunto_S, b
         }
         em_pauta.soma_objetos.peso -= conjunto_S[n-1].peso;
         em_pauta.soma_objetos.valor += conjunto_S[n-1].valor;
-        em_pauta.mascara_obj |=(1<<(n-1));
+        em_pauta.mascara_obj |= (1<<(n-1));
     }
     Mochila resultado1 = mochila_mais_valiosa_aux(em_pauta, n - 1, conjunto_S, true);
     Mochila resultado2 = mochila_mais_valiosa_aux(em_pauta, n - 1, conjunto_S, false);

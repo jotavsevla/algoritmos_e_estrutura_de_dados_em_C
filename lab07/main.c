@@ -42,13 +42,6 @@ int main() {
         posicao_operador += 2;
     }
     expressao[posicao_operador].operador = '\0';
-
-
-
-
-
-
-
     return 0;
 }
 void inicializa_pilha( pilha* ap_pilha){
